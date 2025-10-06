@@ -26,12 +26,22 @@ def reservoir_sampling(k, datastream):
         list[transactions]: A list of size k containing the sampled transactions.
     """
     sample = []
-    for index, transaction in enumerate(datastream()):
+    for index, transaction in enumerate(datastream()): # is a built-in datastream that gives you the index and the value of a datastream
+
         # transaction, contains the current transaction from the stream
         # Note that it is NOT allowed to store the whole datastream in memory
         # Note that the sample array size should not exceed k
 
         # BEGIN IMPLEMENTATION
+
+            if index < k:
+                 sample.append(transaction)
+            else:
+                if random.random() < k/(index+1): # this is true with a probability of s/(index+1)
+                      chosen_index = random.randint(0, k-1) # choose randomly which one to scrap
+                      sample[chosen_index] = transaction
+                else:
+                    pass # otherwise throw it away
 
         # END IMPLEMENTATION
 
