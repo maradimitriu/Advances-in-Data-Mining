@@ -15,13 +15,23 @@ def create_hash_functions(num_hash_functions, size_bit_array):
         list[lambda]: A list containing the hash functions.
     """
     # Generate a list of hash functions
-    hash_functions = []
+
+    hash_functions = [] # each element in the list is one of the hash functions
+    # it’s storing the hashing methods themselves
+    # doesn't store the results of the hashing
+
     for i in range(num_hash_functions):
         # Create a lambda function that hashes the input
         # note that this should be a unique hash function for all
 
         # BEGIN IMPLEMENTATION
-
+        f = lambda x, seed=i: int(sha256((f"{x}|{seed}").encode()).hexdigest(), 16) % size_bit_array
+        # wee need seed to remember the value of i and to make sure that the 3 (or less/more) hash functions are different from each other
+        # f"{x}|{seed}" is the chosen logic (can also choose a diff one); | is a bit safer, avoids collisions
+        # .encode() converts a string into bytes, like b'real1232'
+        # sha256(...).hexdigest() applies the SHA-256 hash function to the encoded bytes and gives a 64-character hexadecimal string
+        # use modulo % to ensures the final number fits inside the bit array
+        hash_functions.append(f)
         # END IMPLEMENTATION
 
     return hash_functions
@@ -40,7 +50,8 @@ def add_to_bloom_filter(bloom_filter, hash_functions, bank_account):
     """
 
     # BEGIN IMPLEMENTATION
-
+    for funct in hash_functions:
+        bloom_filter[funct(bank_account)] = 1
     # END IMPLEMENTATION
 
     return bloom_filter
@@ -58,6 +69,10 @@ def check_bloom_filter(bloom_filter, hash_functions, bank_account):
     """
 
     # BEGIN IMPLEMENTATION
+    # if there is any 0 at the position in the bloom filter returned by the hash function
+    for funct in hash_functions:
+        if bloom_filter[funct(bank_account)] == 0:
+            return False
 
     # END IMPLEMENTATION
 
